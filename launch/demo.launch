@@ -1,0 +1,11 @@
+<launch>
+    <arg name="portname_left" default="/dev/ttyUSB0"/>
+    <group ns="dobot_left">
+        <node pkg="dobot" name="dobot_server_left" type="DobotServer" args="$(arg portname_left)" />
+    </group>
+    <arg name="portname_right" default="/dev/ttyUSB1"/>
+    <group ns="dobot_right">
+        <node pkg="dobot" name="dobot_server_right" type="DobotServer" args="$(arg portname_right)" />
+    </group>
+
+</launch>

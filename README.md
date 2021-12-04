@@ -1,5 +1,4 @@
 # robot_manipulation
 
-Shuto Ishii is a great __ROS master__.
-
-He knows every thing about ros and ito :)
+# Reference
+https://github.com/shuto1441/dobot
