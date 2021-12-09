@@ -14,15 +14,15 @@ class Publishsers():
         self.msg = dobot_orbit()
 
     def make_msg(self, position):
-        pdt_x = position.x #cur_x 現在のpackのx座標
-        pdt_y = position.y #cur_y 現在のpackのy座標
+        pdt_x = position.x #cur_x 未来のpackのx座標
+        pdt_y = position.y #cur_y 未来のpackのy座標
         pdt_t = position.header.stamp
         # 処理を書く
-        self.msg.x = 100 + pdt_x #未来のpackのx座標
-        self.msg.y = 100 + pdt_y #未来のpackのy座標
+        self.msg.x = 100 + pdt_x #軌道計算後のpackのx座標
+        self.msg.y = 100 + pdt_y #軌道計算後のpackのy座標
         self.msg.header.stamp = rospy.Time.now()
-        self.msg.velocityRatio = 1
-        self.msg.accelerationRatio = 1
+        self.msg.velocityRatio = 1 #軌道計算後のdobotへの司令速度
+        self.msg.accelerationRatio = 1 #軌道計算後のdobotへの司令加速度
 
     def send_msg(self, position):
         # messageを送信
