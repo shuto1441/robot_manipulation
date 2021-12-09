@@ -1,0 +1,16 @@
+<launch>
+    <node name="usb_cam" pkg="usb_cam" type="usb_cam_node" output="screen">
+        <!-- カメラの指定　defaultは/dev/video0 -->
+        <param name="video_device" value="/dev/video0"/>
+        <!-- 画像の大きさ（横幅）の指定 -->
+        <param name="image_width" value="640"/>
+        <!-- 画像の大きさ（縦幅）の指定 -->
+        <param name="image_height" value="480"/>
+        <param name="pixel_format" value="yuyv" />
+        <param name="camera_frame_id" value="usb_cam" />
+        <param name="io_method" value="mmap" />
+    </node>
+    <node pkg="robot_manipulation" name="image2positon" type="pack_image2position.py"/>
+    <node pkg="robot_manipulation" name="pack_positon_predictor" type="pack_position_prediction.py"/>
+    <node pkg="robot_manipulation" name="orbit_decider" type="dobot_orbit_speed.py"/>
+</launch>
