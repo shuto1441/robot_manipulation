@@ -8,7 +8,6 @@ git clone https://github.com/shuto1441/robot_manipulation.git
 cd ../
 catkin build
 ```
-青野
 
 ## Ubuntu20.04 
 Creating symbolic links to OS standard python commands

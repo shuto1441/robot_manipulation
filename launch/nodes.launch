@@ -10,7 +10,7 @@
         <param name="camera_frame_id" value="usb_cam" />
         <param name="io_method" value="mmap" />
     </node>
-    <node pkg="robot_manipulation" name="image2positon" type="pack_image2position.py"/>
-    <node pkg="robot_manipulation" name="pack_positon_predictor" type="pack_position_prediction.py"/>
-    <node pkg="robot_manipulation" name="orbit_decider" type="dobot_orbit_speed.py"/>
+    <node pkg="robot_manipulation" name="image2positon" type="image2position.py"/>
+    <node pkg="robot_manipulation" name="positon_predictor" type="position_predictor.py"/>
+    <node pkg="robot_manipulation" name="dobot_orbit_decider" type="dobot_orbit_decider.py"/>
 </launch>
