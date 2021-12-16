@@ -39,7 +39,7 @@ class Subscribe_publishers:
 
 def main():
     # nodeの立ち上げ
-    rospy.init_node('pack_positon_predictor')
+    rospy.init_node('positon_predictor')
 
     # クラスの作成
     pub = Publishsers()

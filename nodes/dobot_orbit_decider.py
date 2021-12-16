@@ -41,7 +41,7 @@ class Subscribe_publishers:
 
 def main():
     # nodeの立ち上げ
-    rospy.init_node('orbit_decider')
+    rospy.init_node('dobot_orbit_decider')
 
     # クラスの作成
     pub = Publishsers()

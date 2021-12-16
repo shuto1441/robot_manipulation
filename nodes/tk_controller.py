@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 from __future__ import print_function
-import DobotClient as dc
 import tkinter as tk
+from robot_manipulation import DobotClient as dc
 
 if __name__ == "__main__":
     isJoint = False
