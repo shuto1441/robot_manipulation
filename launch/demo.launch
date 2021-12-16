@@ -2,11 +2,14 @@
     <arg name="portname1" default="/dev/ttyUSB0"/>
     <group ns="dobot1">
         <node pkg="dobot" name="dobot_server1" type="DobotServer" args="$(arg portname1)" />
-        <node pkg="dobot" name="dobot_client1" type="Dobot_controller.py"/>
     </group>
     <arg name="portname2" default="/dev/ttyUSB1"/>
     <group ns="dobot2">
         <node pkg="dobot" name="dobot_server2" type="DobotServer" args="$(arg portname2)" />
-        <node pkg="dobot" name="dobot_client2" type="Dobot_controller.py"/>
-    </group>
+    </group> 
+	<!-- <node respawn="true" pkg="joy" type="joy_node" name="ps4_joy" >
+        <param name="deadzone" value="0.05" />
+    </node>
+    <node pkg="robot_manipulation" name="controller" type="dualshock_controller.py"/> -->
+    <!-- <node name="ds4drv_script_call" pkg="robot_manipulation" type="run_ds4drv.sh" output="screen" /> -->
 </launch>
