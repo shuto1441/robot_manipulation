@@ -26,7 +26,7 @@ class Orbit:
         self.wallbounce_ratio = wallbounce_ratio
         self._points = deque(maxlen=3)
 
-    def add(self, point: List[Union[float, int, int]]) -> None:
+    def add(self, point: List[List[Union[float, int]]]) -> None:
         """パックの観測時刻，座標を追加する．
 
         Parameters
@@ -35,7 +35,7 @@ class Orbit:
         """
         self._points.append(Point(*point))
 
-    def predict(self) -> Union[Union[float, int, int], None]:
+    def predict(self) -> Union[List[Union[float, int]], None]:
         """これまでのパックの観測データから，先のステップまでの軌道を点群として
         予測する．
 
@@ -66,8 +66,8 @@ class Orbit:
 
     def _predict_points(
         self, time: float, time_step: float, pos: np.ndarray, vec: np.ndarray,
-        i: int, preds: List[Union[float, int, int]]
-        ) -> List[Union[float, int, int]]:
+        i: int, preds: List[List[Union[float, int]]]
+        ) -> List[List[Union[float, int]]]:
         """再帰的に軌道を予測する．床や壁との摩擦による減速を反映．"""
 
         i += 1
@@ -123,7 +123,7 @@ class Test:
         pred_points = orbit.predict()
         self._show(pred_points)
 
-    def _show(self, pred_points: List[Union[float, int, int]]) -> None:
+    def _show(self, pred_points: List[List[Union[float, int]]]) -> None:
         self.field = np.zeros((FIELD_H, FIELD_W, 3))
         for point in self.init_points:
             self._plot(point, (0, 255, 0))
@@ -138,7 +138,7 @@ class Test:
                 break
 
     def _plot(
-        self, point: Union[float, int, int], color: Tuple[int, int, int]
+        self, point: List[Union[float, int]], color: Tuple[int, int, int]
     ) -> None:
         t, x, y = point
         cv2.circle(self.field, (x, y), 3, color, thickness=-1)
