@@ -52,13 +52,13 @@ class PTPMode(Enum):
         (x,y,z,r)
         is the Cartesian coordinate increment in Cartesian coordinate system
     """
-    JUMP_XYZ = 0x00
-    MOVJ_XYZ = 0x01
-    MOVL_XYZ = 0x02
-    JUMP_ANGLE = 0x03
-    MOVJ_ANGLE = 0x04
-    MOVL_ANGLE = 0x05
-    MOVJ_INC = 0x06
-    MOVL_INC = 0x07
-    MOVJ_XYZ_INC = 0x08
-    JUMP_MOVL_XYZ = 0x09
+    JUMP_XYZ = 0
+    MOVJ_XYZ = 1
+    MOVL_XYZ = 2
+    JUMP_ANGLE = 3
+    MOVJ_ANGLE = 4
+    MOVL_ANGLE = 5
+    MOVJ_INC = 6
+    MOVL_INC = 7
+    MOVJ_XYZ_INC = 8
+    JUMP_MOVL_XYZ = 9

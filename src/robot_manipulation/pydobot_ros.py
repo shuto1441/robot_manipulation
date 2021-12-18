@@ -10,7 +10,7 @@ class Dobot:
         self.namespace = namespace
 
     def move_to(self, x, y, z, r):
-        self._set_ptp_cmd(PTPMode.MOVL_XYZ, x, y, z, r)
+        self._set_ptp_cmd(PTPMode.MOVL_XYZ.value, x, y, z, r)
 
     def suck(self, enable):
         self._set_end_effector_suction_cup(1, enable, 1)
@@ -18,15 +18,18 @@ class Dobot:
     def grip(self, enable):
         self._set_end_effector_gripper(1, enable, 1)
 
-    def speed(self, xyzVelocity, rVelocity, xyzAcceration, rAcceration, velocityRatio=100., accerationRatio=100.,):
+    def speed(self, Velocity, Acceration, velocityRatio=100., accerationRatio=100.,):
         self._set_ptp_common_params(velocityRatio, accerationRatio, 1)
-        self._set_ptp_coordinate_params(xyzVelocity, rVelocity, xyzAcceration, rAcceration, 1)
+        self._set_ptp_coordinate_params(Velocity, Velocity, Acceration, Acceration, 1)
 
     def wait(self, ms):
         self._set_wait_cmd(ms)
 
     def pose(self):
         return self._get_pose()
+    
+    def home(self):
+        self._set_home_cmd()
 
     def _set_ptp_cmd(self, ptpMode, x, y, z, r):
         """
@@ -78,7 +81,7 @@ class Dobot:
             int32 result
             uint64 queuedCmdIndex
         """
-        return self.run(SetWAITCmd, timeout)
+        return self._run(SetWAITCmd, timeout)
 
     def _get_pose(self):
         """
@@ -120,6 +123,14 @@ class Dobot:
             uint64 queuedCmdIndex
         """
         return self._run(SetPTPCoordinateParams, xyzVelocity, rVelocity, xyzAcceration, rAcceration, isQueued)
+
+    def _set_home_cmd(self):
+        """
+        Returns:
+            int32 result
+            uint64 queuedCmdIndex
+        """
+        return self._run(SetHOMECmd)
 
     def _run(self, command, *args, **kwargs):
         if self.namespace == None:
