@@ -10,6 +10,14 @@ class Dobot:
         self.velocity = 100
         self.acceleration = 100
 
+    def set_home_cmd(self):
+        """
+        Returns:
+            int32 result
+            uint64 queuedCmdIndex
+        """
+        return run(SetHOMECmd)
+
     def move_to(self, x, y, z, r):
         run(SetPTPCmd, 2, x, y, z, r)
 
@@ -20,8 +28,8 @@ class Dobot:
         run(SetEndEffectorGripper, enable)
 
     def speed(self, velocity, acceleration):
-        run(SetPTPCommonParams, velocity, velocity, acceleration, acceleration)
-        run(SetPTPCoordinateParams, velocity, acceleration)
+        run(SetPTPCommonParams, velocity, acceleration, 1)
+        run(SetPTPCoordinateParams, velocity, acceleration, velocity, acceleration, 1)
 
     def wait(self, ms):
         run(SetWAITCmd, ms)
