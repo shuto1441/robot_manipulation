@@ -12,6 +12,23 @@ FIELD_H = 300  # [mm]
 
 
 class Orbit:
+    """最新の観測座標を3点保持し，将来の軌道を予測する．
+
+    Parameters
+    ----------
+        linearity_thresh: 3点が直線に並んでいる程度(0.0~1.0)．1に近いほど直線状．
+            3点から作られる三角形について，「長辺/(短辺1+短辺2)」で定義される．壁で
+            の折り返し地点で誤計算するのを防ぐため．
+        positional_resolution: 予測軌道の点列の最大の分解能．
+            最新の2点から割り出した速度で分解能分進む時間を計算し，その時間ステップ
+            で移動距離を計算する．
+        max_pred_iter: 計算するステップ数の上限．
+        floorfriction_ratio: (x, y)方向についての摩擦による速度変化の割合．
+            各方向について，1時間ステップ毎に速度に乗算される．例えば(0.9, 0.8)の場
+            合，1ステップ毎にx方向速度を0.9倍，y方向速度を0.8倍する．
+        wallbounce_ratio: 壁で跳ね返る際の，(x, y)方向についての速度変化の割合．
+            壁に到達した瞬間の速度ベクトルにのみ，上記と同じ処理が施される．
+    """
 
     def __init__(
         self, linearity_thresh: float, positional_resolution: int,
@@ -26,23 +43,23 @@ class Orbit:
         self.wallbounce_ratio = wallbounce_ratio
         self._points = deque(maxlen=3)
 
-    def add(self, point: List[Union[float, int, int]]) -> None:
+    def add(self, point: List[List[Union[float, int]]]) -> None:
         """パックの観測時刻，座標を追加する．
 
         Parameters
         ----------
-            points: [時刻, x座標, y座標]形式のリスト
+            points: [時刻, x座標, y座標]のリスト．3点以上記録されると予測が可能．
         """
         self._points.append(Point(*point))
 
-    def predict(self) -> Union[Union[float, int, int], None]:
+    def predict(self) -> Union[List[Union[float, int]], None]:
         """これまでのパックの観測データから，先のステップまでの軌道を点群として
         予測する．
 
         Returns
         -------
-            [[時刻1, x座標1, y座標1], [時刻2, x座標2, y座標2], ...]形式のリスト
-            or None（軌道の予測が不可能な場合）
+            [[時刻1, x座標1, y座標1], [時刻2, x座標2, y座標2], ...]のリスト or
+            None（軌道の予測が不可能な場合）
         """
         points = self._points.copy()
         # データ点数が3点未満と少ない場合
@@ -66,8 +83,8 @@ class Orbit:
 
     def _predict_points(
         self, time: float, time_step: float, pos: np.ndarray, vec: np.ndarray,
-        i: int, preds: List[Union[float, int, int]]
-        ) -> List[Union[float, int, int]]:
+        i: int, preds: List[List[Union[float, int]]]
+        ) -> List[List[Union[float, int]]]:
         """再帰的に軌道を予測する．床や壁との摩擦による減速を反映．"""
 
         i += 1
@@ -109,6 +126,7 @@ class Point:
 
 
 class Test:
+    """軌道予測をシミュレートするテストクラス．"""
 
     def __init__(self) -> None:
         self.init_points = [
@@ -123,7 +141,7 @@ class Test:
         pred_points = orbit.predict()
         self._show(pred_points)
 
-    def _show(self, pred_points: List[Union[float, int, int]]) -> None:
+    def _show(self, pred_points: List[List[Union[float, int]]]) -> None:
         self.field = np.zeros((FIELD_H, FIELD_W, 3))
         for point in self.init_points:
             self._plot(point, (0, 255, 0))
@@ -138,7 +156,7 @@ class Test:
                 break
 
     def _plot(
-        self, point: Union[float, int, int], color: Tuple[int, int, int]
+        self, point: List[Union[float, int]], color: Tuple[int, int, int]
     ) -> None:
         t, x, y = point
         cv2.circle(self.field, (x, y), 3, color, thickness=-1)

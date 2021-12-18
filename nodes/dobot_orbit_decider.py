@@ -3,7 +3,8 @@
 import rospy
 # メッセージの型等のimport
 from robot_manipulation.msg import dobot_orbit
-from robot_manipulation.msg import pack_predicted_position
+# from robot_manipulation.msg import pack_predicted_position
+from std_msgs.msg import Float32MultiArray
 
 
 class Publishsers():
@@ -33,7 +34,7 @@ class Subscribe_publishers:
     def __init__(self, pub):
         self.pub = pub
         # Subscriberを作成
-        rospy.Subscriber("/pack_pdt_pos", pack_predicted_position, self.callback)
+        rospy.Subscriber("/pack_pdt_pos", Float32MultiArray, self.callback)
 
     def callback(self, position):
         # publish
@@ -41,7 +42,7 @@ class Subscribe_publishers:
 
 def main():
     # nodeの立ち上げ
-    rospy.init_node('orbit_decider')
+    rospy.init_node('dobot_orbit_decider')
 
     # クラスの作成
     pub = Publishsers()

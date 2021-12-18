@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 import rospy
 
-from dobot.srv import *
+from dobot_msgs.srv import *
 
 
 def run(command, *args, **kwargs):
