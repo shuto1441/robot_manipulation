@@ -43,7 +43,7 @@ class Orbit:
         self.wallbounce_ratio = wallbounce_ratio
         self._points = deque(maxlen=3)
 
-    def add(self, point: List[List[Union[float, int]]]) -> None:
+    def add(self, point: List[List[int]]) -> None:
         """パックの観測時刻，座標を追加する．
 
         Parameters
@@ -52,7 +52,7 @@ class Orbit:
         """
         self._points.append(Point(*point))
 
-    def predict(self) -> Union[List[Union[float, int]], None]:
+    def predict(self) -> Union[List[int], None]:
         """これまでのパックの観測データから，先のステップまでの軌道を点群として
         予測する．
 
@@ -75,16 +75,16 @@ class Orbit:
         vec = p_cur.coord - p_pre.coord  # 過去2点のベクトル
         ratio = self.positional_resolution / norm(vec)  # 分解能あたりに変換
         norm_vec = vec * ratio
-        time_step = (p_cur.t - p_pre.t) * ratio  # 分解能分進む時間を時間ステップにする
+        time_step = int((p_cur.t - p_pre.t) * ratio)  # 分解能分進む時間を時間ステップにする
 
         preds = self._predict_points(
             p_cur.t, time_step, p_cur.coord, norm_vec, 0, [])
         return preds
 
     def _predict_points(
-        self, time: float, time_step: float, pos: np.ndarray, vec: np.ndarray,
-        i: int, preds: List[List[Union[float, int]]]
-        ) -> List[List[Union[float, int]]]:
+        self, time: int, time_step: int, pos: np.ndarray, vec: np.ndarray,
+        i: int, preds: List[List[int]]
+        ) -> List[List[int]]:
         """再帰的に軌道を予測する．床や壁との摩擦による減速を反映．"""
 
         i += 1
@@ -141,7 +141,7 @@ class Test:
         pred_points = orbit.predict()
         self._show(pred_points)
 
-    def _show(self, pred_points: List[List[Union[float, int]]]) -> None:
+    def _show(self, pred_points: List[List[int]]) -> None:
         self.field = np.zeros((Y_LIM[1]-Y_LIM[0], X_LIM[1]-X_LIM[0], 3))
         for point in self.init_points:
             self._plot(point, (0, 255, 0))
@@ -156,7 +156,7 @@ class Test:
                 break
 
     def _plot(
-        self, point: List[Union[float, int]], color: Tuple[int, int, int]
+        self, point: List[int], color: Tuple[int, int, int]
     ) -> None:
         x, y, t = point
         print(x, y, t)
