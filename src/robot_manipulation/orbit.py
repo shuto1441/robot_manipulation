@@ -7,8 +7,8 @@ import numpy as np
 from numpy.linalg import norm
 
 
-FIELD_W = 400  # [mm]
-FIELD_H = 300  # [mm]
+X_LIM = (0, 1000)  # [mm]
+Y_LIM = (-200, 200)  # [mm]
 
 
 class Orbit:
@@ -48,7 +48,7 @@ class Orbit:
 
         Parameters
         ----------
-            points: [時刻, x座標, y座標]のリスト．3点以上記録されると予測が可能．
+            points: [x座標, y座標, 時刻]のリスト．3点以上記録されると予測が可能．
         """
         self._points.append(Point(*point))
 
@@ -58,7 +58,7 @@ class Orbit:
 
         Returns
         -------
-            [[時刻1, x座標1, y座標1], [時刻2, x座標2, y座標2], ...]のリスト or
+            [[x座標1, y座標1, 時刻1], [x座標2, y座標2, 時刻2], ...]のリスト or
             None（軌道の予測が不可能な場合）
         """
         points = self._points.copy()
@@ -91,15 +91,15 @@ class Orbit:
         vec_next = vec * self.floorfriction_ratio  # 床面摩擦による減速
         x_next_tmp, y_next_tmp = pos + vec_next
 
-        if x_next_tmp < 0 or FIELD_W < x_next_tmp:  # 端への到達判定
+        if x_next_tmp < X_LIM[0] or X_LIM[1] < x_next_tmp:  # 端への到達判定
             return preds
 
-        if y_next_tmp < 0 or FIELD_H < y_next_tmp:  # 壁との衝突判定
+        if y_next_tmp < Y_LIM[0] or Y_LIM[1] < y_next_tmp:  # 壁との衝突判定
             vec_next[0] *= self.wallbounce_ratio[0]  # 壁面摩擦による減速
             vec_next[1] *= -self.wallbounce_ratio[1]  # 跳ね返りによる減速
 
         x_next, y_next = pos_next = pos + vec_next
-        preds.append([time+time_step*i, int(x_next), int(y_next)])
+        preds.append([int(x_next), int(y_next), time+time_step*i])
 
         if i >= self.max_pred_iter:
             return preds
@@ -116,10 +116,10 @@ def _linearity(points: List['Point']):
 
 @dataclass
 class Point:
-    """時刻，[x, y]座標を保持する．"""
-    t: float
+    """x, y]座標，時刻を保持する．"""
     x: int
     y: int
+    t: float
 
     def __post_init__(self) -> None:
         self.coord: np.ndarray = np.array([self.x, self.y])
@@ -130,9 +130,9 @@ class Test:
 
     def __init__(self) -> None:
         self.init_points = [
-            [10.00, 200, 200],
-            [10.04, 206, 218],
-            [10.09, 214, 244]
+            [200, 105, 10.00],
+            [206, 113, 10.04],
+            [214, 125, 10.09]
         ]
 
     def simulate(self, orbit: 'Orbit') -> None:
@@ -142,7 +142,7 @@ class Test:
         self._show(pred_points)
 
     def _show(self, pred_points: List[List[Union[float, int]]]) -> None:
-        self.field = np.zeros((FIELD_H, FIELD_W, 3))
+        self.field = np.zeros((Y_LIM[1]-Y_LIM[0], X_LIM[1]-X_LIM[0], 3))
         for point in self.init_points:
             self._plot(point, (0, 255, 0))
         for point in pred_points:
@@ -158,8 +158,9 @@ class Test:
     def _plot(
         self, point: List[Union[float, int]], color: Tuple[int, int, int]
     ) -> None:
-        t, x, y = point
-        cv2.circle(self.field, (x, y), 3, color, thickness=-1)
+        x, y, t = point
+        print(x, y, t)
+        cv2.circle(self.field, (x, y-Y_LIM[0]), 3, color, thickness=-1)
         # cv2.putText(
         #     self.field, text=str(round(t, 2)), org=(x, y), fontFace=cv2.FONT_HERSHEY_SIMPLEX,
         #     fontScale=0.4, color=color, thickness=1, lineType=cv2.LINE_AA)
@@ -167,5 +168,5 @@ class Test:
 
 if __name__ == "__main__":
     test = Test()
-    test.simulate(Orbit(0.8, 20, 100, (1.0, 1.0), (1.0, 1.0)))
-    test.simulate(Orbit(0.8, 20, 100, (0.95, 0.95), (0.95, 0.5)))
+    # test.simulate(Orbit(0.8, 20, 100, (1.0, 1.0), (1.0, 1.0)))
+    test.simulate(Orbit(0.8, 20, 100, (0.995, 0.995), (0.995, 0.6)))

@@ -42,7 +42,7 @@ class HIT:
         x = xyt[0]
         y = xyt[1]
         if self.motionRange(x, y):
-            Dobot.speed(200, 200)  # velocity, acceleration
+            Dobot.speed(400, 400)  # velocity, acceleration
             Dobot.move_to(x, y, self.z, self.r)
             wait_time = xyt[2] - time.time() * 1000  # ms
             Dobot.wait(wait_time)
@@ -61,7 +61,7 @@ class HIT:
         x_next = p_now[0] * (1-ratio) + self.p_init[0] * ratio
         y_next = p_now[1] * (1-ratio) + self.p_init[1] * ratio
         if self.motionRange(x_next, y_next):
-            Dobot.speed(200, 200)  # velocity, acceleration
+            Dobot.speed(400, 400)  # velocity, acceleration
             # ratio=1 means p_init
             Dobot.move_to(x_next, y_next, self.z, self.r)
         return [x_next, y_next]
