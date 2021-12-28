@@ -38,13 +38,13 @@ class Subscribers:
         #self.pub = pub
         # Subscriberを作成
         rospy.Subscriber("/pack_pdt_pos", Float32MultiArray, self.callback)
+        self.hit = HIT()
 
     def callback(self, orbit_predict):
-        hit = HIT()
         xyt = orbit_predict.xyt
         direction = orbit_predict.direction
-        hit.hitHeadon(xyt, direction)
-        hit.returnDobot(1)
+        self.hit.hitHeadon(xyt, direction)
+        self.hit.returnDobot(1)
 
 
 def main():
