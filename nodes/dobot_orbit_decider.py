@@ -3,8 +3,8 @@
 import rospy
 # メッセージの型等のimport
 from robot_manipulation.msg import dobot_orbit
-# from robot_manipulation.msg import pack_predicted_position
-from std_msgs.msg import Float32MultiArray
+from robot_manipulation.msg import pack_predicted_position
+#from std_msgs.msg import Float32MultiArray
 
 from robot_manipulation import HIT
 from time import sleep
@@ -34,23 +34,31 @@ from time import sleep
 #         self.pub.publish(self.msg)
 
 class Subscribers:
-    def __init__(self, pub):
+    def __init__(self):
         #self.pub = pub
         # Subscriberを作成
-        rospy.Subscriber("/pack_pdt_pos", Float32MultiArray, self.callback)
+        rospy.Subscriber("/pack_pdt_pos", pack_predicted_position, self.callback)
+        self.hit = HIT()
+        self.is_moving = False
 
     def callback(self, orbit_predict):
-        hit = HIT()
         xyt = orbit_predict.xyt
         direction = orbit_predict.direction
-        hit.hitHeadon(xyt, direction)
-        hit.returnDobot(1)
+        print(xyt)
+        print(direction)
+        if not self.is_moving:
+            self.is_moving = True
+            self.hit.hitHeadon(xyt, direction)
+            sleep(5)
+            self.hit.returnDobot(1)
+            self.is_moving = False
+
 
 
 def main():
     # nodeの立ち上げ
     rospy.init_node('dobot_orbit_decider')
-    
+
     sub = Subscribers()
     rospy.spin()
 
