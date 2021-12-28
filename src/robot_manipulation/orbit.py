@@ -73,7 +73,7 @@ class Orbit:
         # 軌道予測
         p_pre, p_cur = points[1], points[2]
         vec = p_cur.coord - p_pre.coord  # 過去2点のベクトル
-        ratio = self.positional_resolution / norm(vec)  # 分解能あたりに変換
+        ratio = self.positional_resolution / max(norm(vec), 1e-10)  # 分解能あたりに変換
         norm_vec = vec * ratio
         time_step = int((p_cur.t - p_pre.t) * ratio)  # 分解能分進む時間を時間ステップにする
 
