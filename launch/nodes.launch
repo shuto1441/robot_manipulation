@@ -1,4 +1,6 @@
 <launch>
+    <arg name="portname" default="/dev/ttyUSB0"/>
+    <node pkg="dobot_driver" name="dobot_server1" type="DobotServer" args="$(arg portname)" />
     <node name="usb_cam" pkg="usb_cam" type="usb_cam_node" output="screen">
         <!-- カメラの指定　defaultは/dev/video0 -->
         <param name="video_device" value="/dev/video2"/>
