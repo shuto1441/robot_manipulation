@@ -6,7 +6,7 @@ from robot_manipulation.msg import pack_current_position
 # from robot_manipulation.msg import pack_predicted_position
 from std_msgs.msg import Float32MultiArray
 
-from robot_manipulation.scripts import Orbit
+from robot_manipulation import Orbit
 
 
 class Publishsers():
@@ -26,7 +26,7 @@ class Publishsers():
         cur_t = position.header.stamp
 
         # 処理を書く
-        self.orbit.add([cur_t, cur_x, cur_y])
+        self.orbit.add([cur_x, cur_y, cur_t])
         preds = self.orbit.predict()
         if preds is None:
             return
