@@ -5,21 +5,25 @@ import rospy
 from robot_manipulation.msg import pack_current_position
 from sensor_msgs.msg import Image
 from cv_bridge import CvBridge
+from robot_manipulation import video_capture
 import cv2 as cv
-
-
+import numpy as np
 class Publishsers():
     def __init__(self):
         # Publisherを作成
         self.pub = rospy.Publisher('/pack_cur_pos', pack_current_position, queue_size=10)
         # messageの型を作成
         self.msg = pack_current_position()
+        # self.start = False;
+        # self.step = 1
 
     def make_msg(self, img):
         # 処理を書く
         # 引数のimgは画像のnumpy配列
-        self.msg.x = 100 #pack x座標
-        self.msg.y = 100 #pack y座標
+
+        mm_x,mm_y=videoCapture.img2mm(img)
+        self.msg.x = int(mm_x) #pack x座標
+        self.msg.y = int(mm_y) #pack y座標
         self.msg.header.stamp = rospy.Time.now()
 
     def send_msg(self, img):
