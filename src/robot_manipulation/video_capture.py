@@ -21,7 +21,7 @@ m[2] = [1140,620]
 m[3] = [50,620]
 
 # フィールドの実際の大きさ
-x_min,x_max=59,859
+x_min,x_max=110,910
 y_min,y_max=-200,200
 width, height = (x_max-x_min,y_max-y_min) # 変形後画像サイズ
 
