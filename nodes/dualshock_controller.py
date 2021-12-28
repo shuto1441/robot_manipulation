@@ -3,7 +3,7 @@
 from re import L
 import rospy
 from sensor_msgs.msg import Joy
-from dobot.srv import *
+from dobot_msgs.srv import *
 
 
 class Subscribers():
