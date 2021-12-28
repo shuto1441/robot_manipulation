@@ -11,7 +11,7 @@
         <param name="io_method" value="mmap" />
     </node>
     <node name="rqt_image_view" pkg="rqt_image_view" type="rqt_image_view" args="image:=/usb_cam/image_raw" required="true" />
-    <node pkg="robot_manipulation" name="image2positon" type="image2position.py"/>
+    <!-- <node pkg="robot_manipulation" name="image2positon" type="image2position.py"/> -->
     <!-- <node pkg="robot_manipulation" name="positon_predictor" type="position_predictor.py"/> -->
     <!-- <node pkg="robot_manipulation" name="dobot_orbit_decider" type="dobot_orbit_decider.py"/> -->
 </launch>

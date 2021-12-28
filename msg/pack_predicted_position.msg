@@ -1,3 +1,3 @@
 Header header
-int32 x
-int32 y
+Int32MultiArray xyt
+Float32MultiArray direction 

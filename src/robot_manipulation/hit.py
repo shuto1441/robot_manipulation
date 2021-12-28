@@ -7,8 +7,8 @@ class HIT:
     def __init__(self):
         self.dobot = Dobot()
         self.p_base = np.array([0, 0])
-        self.dobot.move_to(150, 0, 0, 0)
-        self.stop(np.array([150, 0]))
+        self.dobot.move_to(155, 0, -20, 0)
+        self.stop(np.array([155, 0]))
         self.p_init = self.dobot.pose()
         print(self.p_init)
         self.z = self.p_init.z
@@ -21,14 +21,14 @@ class HIT:
     def motionRange(self, x, y):
         d_from_base = self.calcDistance([x, y], self.p_base)
         judge = False
-        if d_from_base > 150 and d_from_base < 300:
+        if x > 0 and x < 300 and y > -165 and y < 165 and d_from_base > 155 and d_from_base < 300:
             judge = True
         return judge
 
     def hitRange(self, x, y):
         d_from_base = self.calcDistance(np.array([x, y]), self.p_base)
         judge = False
-        if d_from_base > 150 and d_from_base < 200:
+        if x > 0 and x < 300 and y > -165 and y < 165 and d_from_base > 155 and d_from_base < 200:
             judge = True
         return judge
 
@@ -57,8 +57,8 @@ class HIT:
         return None
 
     def hitHeadon(self, xyt, direction):
-        x = xyt[0]
-        y = xyt[1]
+        x = xyt[0] - direction[0] * 70
+        y = xyt[1] - direction[0] * 70
         if self.motionRange(x, y):
             self.dobot.speed(800, 800)  # velocity, acceleration
             self.dobot.move_to(x, y, self.z, self.r)
@@ -68,8 +68,8 @@ class HIT:
             if wait_time > 100:
                 self.dobot.wait(wait_time - 100)
 
-            x += direction[0] * 30
-            y += direction[1] * 30
+            x += direction[0] * 50
+            y += direction[1] * 50
             if self.motionRange(x, y):
                 self.dobot.speed(800, 800)  # velocity, acceleration
                 self.dobot.move_to(x, y, self.z, self.r)
