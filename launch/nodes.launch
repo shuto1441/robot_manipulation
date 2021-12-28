@@ -12,6 +12,6 @@
     </node>
     <node name="image_view" pkg="image_view" type="image_view" args="image:=/usb_cam/image_raw" required="true" />
     <node pkg="robot_manipulation" name="image2positon" type="image2position.py"/>
-    <node pkg="robot_manipulation" name="positon_predictor" type="position_predictor.py"/>
+    <!-- <node pkg="robot_manipulation" name="positon_predictor" type="position_predictor.py"/> -->
     <!-- <node pkg="robot_manipulation" name="dobot_orbit_decider" type="dobot_orbit_decider.py"/> -->
 </launch>
