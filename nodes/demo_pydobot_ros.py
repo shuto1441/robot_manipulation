@@ -1,11 +1,11 @@
 #!/usr/bin/env python
 from __future__ import print_function
 import time
+from time import sleep
 
 from robot_manipulation import Dobot
 from robot_manipulation import Orbit
 from robot_manipulation import HIT
-from time import sleep
 
 import tkinter as tk
 
@@ -14,13 +14,14 @@ def main():
     dobot = Dobot() #dobot名の指定
     # dobot.home() #ホーミング
     k = 0
-    while(k<10):
-        k += 1
+    while(k<3):
         dobot.move_to(155, 0, -20, 0) #移動(x, y, z, r)
         dobot.speed(800, 800) #速度設定　spped(速度，加速度)
-        dobot.move_to(200, 170, -20, 0) #移動(x, y, z, r)
+        dobot.move_to(200, 165, -20, 0) #移動(x, y, z, r)
+        k += 1
+    dobot.move_to(155, 0, -20, 0) #移動(x, y, z, r)
     # dobot.wait(1000) #待機(ms)
-    time.sleep(3)
+    sleep(3)
     print(dobot.pose())
 
 
