@@ -7,7 +7,7 @@ class HIT:
     def __init__(self):
         self.dobot = Dobot()
         self.p_base = np.array([0, 0])
-        self.dobot.move_to(150, 0, 0, 0)
+        self.dobot.move_to(150, 0, -20, 0)
         self.stop(np.array([150, 0]))
         self.p_init = self.dobot.pose()
         print(self.p_init)
