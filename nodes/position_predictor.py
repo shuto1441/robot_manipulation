@@ -6,7 +6,7 @@ from robot_manipulation.msg import pack_current_position
 # from robot_manipulation.msg import pack_predicted_position
 from std_msgs.msg import Float32MultiArray
 
-from robot_manipulation.scripts import Orbit
+from robot_manipulation import Orbit
 
 
 class Publishsers():
