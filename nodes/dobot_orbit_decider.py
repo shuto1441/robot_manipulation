@@ -41,12 +41,8 @@ class Subscribers:
 
     def callback(self, orbit_predict):
         hit = HIT()
-        while(True):
-            condition = hit.hitCondition(orbit_predict)
-            if condition is not None:
-                break
-            sleep(10/1000)
-        xyt, direction =  condition
+        xyt = orbit_predict.xyt
+        direction = orbit_predict.direction
         hit.hitHeadon(xyt, direction)
         hit.returnDobot(1)
 

@@ -28,20 +28,19 @@ class Publishers():
         msg = pack_predicted_position()
         self.orbit.add([cur_x, cur_y, cur_t])
         preds = self.orbit.predict()
-        if preds is None or len(preds) == 0:
+        data_len = len(preds)
+        if preds is None or data_len == 0:
             print('no data')
             return
+        print(f'data len = {data_len}')
+
         hit = HIT()
-        while(True):
-            condition = hit.hitCondition(preds)
-            if condition is not None:
-                break
-            sleep(10/1000)
-        xyt, direction =  condition
-        msg.xyt = xyt
-        msg.direction = direction
-        self.pub.publish(msg)
-        print(f'data len = {len(preds)}')
+        condition = hit.hitCondition(preds)
+        if condition is not None:
+            xyt, direction =  condition
+            msg.xyt = xyt
+            msg.direction = direction
+            self.pub.publish(msg)
 
 
 class Subscribe_publishers:
