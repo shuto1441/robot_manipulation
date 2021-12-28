@@ -21,7 +21,7 @@ class Publishsers():
         # 処理を書く
         # 引数のimgは画像のnumpy配列
 
-        mm_x,mm_y=videoCapture.img2mm(img)
+        mm_x,mm_y=video_capture.img2mm(img)
         self.msg.x = int(mm_x) #pack x座標
         self.msg.y = int(mm_y) #pack y座標
         self.msg.header.stamp = rospy.Time.now()
