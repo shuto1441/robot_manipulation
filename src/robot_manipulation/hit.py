@@ -11,9 +11,10 @@ class HIT:
         self.dobot.move_to(155, 0, -20, 0)
         self.stop([155, 0])
         self.p_init = self.dobot.pose()
-        print(self.p_init)
         self.z = self.p_init.z
         self.r = self.p_init.r
+        print(self.p_init)
+        self.l = 50 # move-distance when hit
         
 
     def calcDistance(self, position1, position2):
@@ -33,12 +34,14 @@ class HIT:
         self.moving = True
         print('moving to x: ' + str(goal[0]) + ' y: ' + str(goal[1]))
         k = 0
-        while(k < 1000):
+        while(k < 1001):
             output = self.dobot.pose()
             now = [output.x, output.y]
             if self.calcDistance(now, goal) < 1:
                 self.moving = False
                 break
+            if k == 1000:
+                print('Error! k==1000')
             k += 1
             time.sleep(10/1000)
         print('moved ' + str(k*10) + ' ms, then stop')
@@ -60,14 +63,17 @@ class HIT:
                     else:
                         direction = [1, 0] # x axis direction
 
-                x = xy[0] - direction[0] * 70
-                y = xy[1] - direction[1] * 70
-                if self.dobotArea(x, y):
-                    wait_time = xyt[2] - int(time.time() * 1000)  # ms
-                    if wait_time > 3000:
-                        return None
-                    else:
-                        return xyt, direction
+                x_dobot_start = xy[0] - direction[0] * 70
+                y_dobot_start = xy[1] - direction[1] * 70
+                if self.dobotArea(x_dobot_start, y_dobot_start):
+                    x_dobot_goal = xy[0] - direction[0] * (70 - self.l)
+                    y_dobot_goal = xy[1] - direction[1] * (70 - self.l)
+                    if self.dobotArea(x_dobot_goal, y_dobot_goal):
+                        wait_time = xyt[2] - int(time.time() * 1000)  # ms
+                        if wait_time > 3000:
+                            return None
+                        else:
+                            return xyt, direction
             xy_pre = xyt[:2]
         return None
 
@@ -83,12 +89,13 @@ class HIT:
             if wait_time > 100:
                 self.dobot.wait(wait_time - 100)
 
-            x += direction[0] * 50
-            y += direction[1] * 50
+            x += direction[0] * self.l
+            y += direction[1] * self.l
             if self.dobotArea(x, y):
                 self.dobot.speed(800, 800)  # velocity, acceleration
                 self.dobot.move_to(x, y, self.z, self.r)
                 self.stop([x, y])
+
 
     def hitXdirection(self, xyt):
         direction = [1, 0]
@@ -104,8 +111,8 @@ class HIT:
             if wait_time > 10:
                 self.dobot.wait(wait_time - 10)
 
-            x += direction[0] * 50
-            y += direction[1] * 50
+            x += direction[0] * self.l
+            y += direction[1] * self.l
             if self.dobotArea(x, y):
                 self.dobot.speed(800, 800)  # velocity, acceleration
                 self.dobot.move_to(x, y, self.z, self.r)
@@ -123,8 +130,8 @@ class HIT:
             if wait_time > 10:
                 self.dobot.wait(wait_time - 10)
 
-            x += direction[0] * (-50)
-            y += direction[1] * (-50)
+            x -= direction[0] * 50
+            y -= direction[1] * 50
             if self.dobotArea(x, y):
                 self.dobot.speed(800, 800)  # velocity, acceleration
                 self.dobot.move_to(x, y, self.z, self.r)
