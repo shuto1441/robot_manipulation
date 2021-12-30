@@ -41,10 +41,14 @@ class Subscribers:
         self.hit = HIT()
 
     def callback(self, orbit_predict):
-        xyt = orbit_predict.xyt
-        direction = orbit_predict.direction
-        self.hit.hitHeadon(xyt, direction)
-        self.hit.returnDobot(1)
+        if self.hit.moving:
+            return False
+        else:
+            xyt = orbit_predict.xyt
+            direction = orbit_predict.direction
+            self.hit.hitHeadon(xyt, direction)
+            # self.hit.returnDobot(1)
+            return True
 
 
 def main():
