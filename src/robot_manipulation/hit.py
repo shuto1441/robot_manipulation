@@ -5,6 +5,7 @@ from robot_manipulation.pydobot_ros import Dobot
 
 class HIT:
     def __init__(self):
+        self.moving = False
         self.dobot = Dobot()
         self.p_base = np.array([0, 0])
         self.dobot.move_to(155, 0, -20, 0)
@@ -13,6 +14,7 @@ class HIT:
         print(self.p_init)
         self.z = self.p_init.z
         self.r = self.p_init.r
+        
 
     def calcDistance(self, position1, position2):
         d = np.linalg.norm(position1 - position2)
@@ -33,11 +35,13 @@ class HIT:
         return judge
 
     def stop(self, goal):
+        self.moving = True
         k = 0
         while(k < 1000):
             output = self.dobot.pose()
             now = np.array([output.x, output.y])
             if self.calcDistance(now, goal) < 1:
+                self.moving = False
                 break
             k += 1
             time.sleep(10/1000)
