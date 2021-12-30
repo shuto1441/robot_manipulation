@@ -18,29 +18,40 @@ class Publishers():
         self.orbit = Orbit(
             linearity_thresh=0.9, positional_resolution=10, max_pred_iter=100,
             floorfriction_ratio=(1.0, 1.0), wallbounce_ratio=(1.0, 1.0))
+        self.hit = HIT()
 
     def make_and_send_msg(self, position):
         cur_x = position.x #cur_x 現在のpackのx座標
         cur_y = position.y #cur_y 現在のpackのy座標
-        cur_t = position.header.stamp.secs
+        cur_t = int(position.header.stamp.secs * 1000) + int(position.header.stamp.nsecs / 1000000)
+        # cur_t = int((position.header.stamp.secs % 1000) * 1000) + int(position.header.stamp.nsecs / 1000000)
+        print(cur_t)
 
         # 処理を書く
         msg = pack_predicted_position()
         self.orbit.add([cur_x, cur_y, cur_t])
         preds = self.orbit.predict()
+        if preds is None:
+            print('none')
+            return
         data_len = len(preds)
-        if preds is None or data_len == 0:
+        if data_len == 0:
             print('no data')
             return
         print(f'data len = {data_len}')
-
-        hit = HIT()
-        condition = hit.hitCondition(preds)
+        condition = self.hit.hitCondition(preds)
+        print(1)
         if condition is not None:
+            print(2)
             xyt, direction =  condition
+            print(3)
             msg.xyt = xyt
+            print(4)
             msg.direction = direction
+            print(5)
             self.pub.publish(msg)
+            print(6)
+        print(7)
 
 
 class Subscribe_publishers:

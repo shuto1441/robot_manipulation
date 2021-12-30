@@ -48,9 +48,12 @@ class HIT:
         print(k)
 
     def hitCondition(self, orbit_predict):
+        xy_pre = None
         for xyt in np.array(orbit_predict):
             if self.hitRange(xyt[0], xyt[1]):
                 xy = xyt[:2]
+                if xy_pre is None:
+                    continue
                 direction = (xy_pre - xy) / self.calcDistance(xy_pre, xy)
                 wait_time = xyt[2] - int(time.time() * 1000)  # ms
                 if wait_time > 3000:
