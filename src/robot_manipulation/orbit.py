@@ -32,12 +32,13 @@ class Orbit:
 
     def __init__(
         self, linearity_thresh: float, positional_resolution: int,
-        max_pred_iter: int = 100,
+        static_resolution: int, max_pred_iter: int = 100,
         floorfriction_ratio: Tuple[float, float] = (1.0, 1.0),
         wallbounce_ratio: Tuple[float, float] = (1.0, 1.0)
     ) -> None:
         self.linearity_thresh = linearity_thresh
         self.positional_resolution = positional_resolution
+        self.static_resolution = static_resolution
         self.max_pred_iter = max_pred_iter
         self.floorfriction_ratio = floorfriction_ratio
         self.wallbounce_ratio = wallbounce_ratio
@@ -73,9 +74,14 @@ class Orbit:
         # 軌道予測
         p_pre, p_cur = points[1], points[2]
         vec = p_cur.coord - p_pre.coord  # 過去2点のベクトル
-        ratio = self.positional_resolution / norm(vec)  # 分解能あたりに変換
+        vec_len = norm(vec)
+        if vec_len < self.static_resolution:    # 止まっている判定
+            vec = np.zeros_like(vec)
+            ratio = 1.0
+        else:                                       # 動いている判定
+            ratio = self.positional_resolution / vec_len    # 分解能あたりに変換
         norm_vec = vec * ratio
-        time_step = int((p_cur.t - p_pre.t) * ratio)  # 分解能分進む時間を時間ステップにする
+        time_step = int((p_cur.t - p_pre.t) * ratio)        # 分解能分進む時間を時間ステップにする
 
         preds = self._predict_points(
             p_cur.t, time_step, p_cur.coord, norm_vec, 0, [])
@@ -119,7 +125,7 @@ class Point:
     """x, y]座標，時刻を保持する．"""
     x: int
     y: int
-    t: float
+    t: int
 
     def __post_init__(self) -> None:
         self.coord: np.ndarray = np.array([self.x, self.y])
@@ -168,5 +174,5 @@ class Test:
 
 if __name__ == "__main__":
     test = Test()
-    # test.simulate(Orbit(0.8, 20, 100, (1.0, 1.0), (1.0, 1.0)))
-    test.simulate(Orbit(0.8, 20, 100, (0.995, 0.995), (0.995, 0.6)))
+    # test.simulate(Orbit(0.8, 10, 100, (1.0, 1.0), (1.0, 1.0)))
+    test.simulate(Orbit(0.8, 10, 100, (0.995, 0.995), (0.995, 0.6)))

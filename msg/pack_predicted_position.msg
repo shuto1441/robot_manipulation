@@ -1,3 +1,3 @@
 Header header
-int32 x
-int32 y
+int64[] xyt
+float32[] direction

@@ -23,7 +23,7 @@ include_directories(
 
 generate_messages(
   DEPENDENCIES
-  std_msgs  
+  std_msgs
 )
 
 catkin_package()
