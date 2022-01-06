@@ -27,9 +27,11 @@ sudo apt install python-is-python3
 ```
 
 ## Note12/21
+```
 roscore
 rosrun dobot_driver DobotServer /dev/ttyUSB0     (or USB1)
 rosrun robot_manipulation demo_pydobot_ros.py
+```
 
 ## Reference
 https://github.com/shuto1441/dobot
