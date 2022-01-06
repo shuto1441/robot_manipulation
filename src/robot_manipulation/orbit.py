@@ -73,9 +73,14 @@ class Orbit:
         # 軌道予測
         p_pre, p_cur = points[1], points[2]
         vec = p_cur.coord - p_pre.coord  # 過去2点のベクトル
-        ratio = self.positional_resolution / max(norm(vec), 1e-10)  # 分解能あたりに変換
+        vec_len = norm(vec)
+        if vec_len < self.positional_resolution:    # 止まっている判定
+            vec = np.zeros_like(vec)
+            ratio = 1.0
+        else:                                       # 動いている判定
+            ratio = self.positional_resolution / vec_len    # 分解能あたりに変換
         norm_vec = vec * ratio
-        time_step = int((p_cur.t - p_pre.t) * ratio)  # 分解能分進む時間を時間ステップにする
+        time_step = int((p_cur.t - p_pre.t) * ratio)        # 分解能分進む時間を時間ステップにする
 
         preds = self._predict_points(
             p_cur.t, time_step, p_cur.coord, norm_vec, 0, [])
@@ -119,7 +124,7 @@ class Point:
     """x, y]座標，時刻を保持する．"""
     x: int
     y: int
-    t: float
+    t: int
 
     def __post_init__(self) -> None:
         self.coord: np.ndarray = np.array([self.x, self.y])

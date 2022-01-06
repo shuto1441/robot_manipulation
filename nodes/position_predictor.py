@@ -51,6 +51,8 @@ class Publishers():
             print(5)
             self.pub.publish(msg)
             print(6)
+        else:
+            print(preds[:3], preds[-3:])
         print(7)
 
 
