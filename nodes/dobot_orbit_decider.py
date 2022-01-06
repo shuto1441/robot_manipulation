@@ -39,16 +39,16 @@ class Subscribers:
         # Subscriberを作成
         rospy.Subscriber("/pack_pdt_pos", pack_predicted_position, self.callback)
         self.hit = HIT()
+        self.moving = False
 
     def callback(self, orbit_predict):
-        if self.hit.moving:
-            return False
-        else:
+        if not self.moving:
+            self.moving = True
             xyt = orbit_predict.xyt
             direction = orbit_predict.direction
             self.hit.hitHeadon(xyt, direction)
             # self.hit.returnDobot(1)
-            return True
+            self.moving = False
 
 
 def main():
