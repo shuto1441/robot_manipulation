@@ -16,8 +16,8 @@ class Publishers():
         # Publisherを作成
         self.pub = rospy.Publisher('/pack_pdt_pos', pack_predicted_position, queue_size=10)
         self.orbit = Orbit(
-            linearity_thresh=0.9, positional_resolution=10, max_pred_iter=100,
-            floorfriction_ratio=(1.0, 1.0), wallbounce_ratio=(1.0, 1.0))
+            linearity_thresh=0.9, positional_resolution=5, static_resolution=30, max_pred_iter=200,
+            floorfriction_ratio=(0.99, 0.99), wallbounce_ratio=(1.0, 1.0))
         self.hit = HIT()
 
     def make_and_send_msg(self, position):
@@ -40,27 +40,21 @@ class Publishers():
             return
         print(f'data len = {data_len}')
         condition = self.hit.hitCondition(preds)
-        print(1)
         if condition is not None:
-            print(2)
+            print("condition is not None")
             xyt, direction =  condition
-            print(3)
             msg.xyt = xyt
-            print(4)
             msg.direction = direction
-            print(5)
             self.pub.publish(msg)
-            print(6)
         else:
             print(preds[:3], preds[-3:])
-        print(7)
 
 
 class Subscribe_publishers:
     def __init__(self, pub):
         self.pub: 'Publishers' = pub
         # Subscriberを作成
-        rospy.Subscriber("/pack_cur_pos", pack_current_position, self.callback)
+        rospy.Subscriber("/pack_cur_pos", pack_current_position, self.callback, queue_size=1)
 
     def callback(self, position):
         # publish

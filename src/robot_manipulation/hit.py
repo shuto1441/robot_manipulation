@@ -14,7 +14,7 @@ class HIT:
         self.z = self.p_init.z
         self.r = self.p_init.r
         print(self.p_init)
-        self.l = 50 # move-distance when hit
+        self.l = 100 # move-distance when hit
         
 
     def calcDistance(self, position1, position2):
@@ -63,27 +63,40 @@ class HIT:
                     else:
                         direction = [1, 0] # x axis direction
 
+                # x_dobot_start = xy[0] - direction[0] * 70
+                # y_dobot_start = xy[1] - direction[1] * 70
+                # if self.dobotArea(x_dobot_start, y_dobot_start):
+                #     x_dobot_goal = xy[0] - direction[0] * (70 - self.l)
+                #     y_dobot_goal = xy[1] - direction[1] * (70 - self.l)
+                #     if self.dobotArea(x_dobot_goal, y_dobot_goal):
+                #         wait_time = xyt[2] - int(time.time() * 1000)  # ms
+                #         if wait_time > 3000:
+                #             return None
+                #         else:
+                #             return xyt, direction
+                        
                 x_dobot_start = xy[0] - direction[0] * 70
                 y_dobot_start = xy[1] - direction[1] * 70
                 if self.dobotArea(x_dobot_start, y_dobot_start):
-                    x_dobot_goal = xy[0] - direction[0] * (70 - self.l)
-                    y_dobot_goal = xy[1] - direction[1] * (70 - self.l)
-                    if self.dobotArea(x_dobot_goal, y_dobot_goal):
-                        wait_time = xyt[2] - int(time.time() * 1000)  # ms
-                        if wait_time > 3000:
-                            return None
-                        else:
-                            return xyt, direction
+                    wait_time = xyt[2] - int(time.time() * 1000)  # ms
+                    if wait_time > 3000:
+                        return None
+                    else:
+                        return xyt, direction
             xy_pre = xyt[:2]
         return None
 
     def hitHeadon(self, xyt, direction):
         x = xyt[0] - direction[0] * 70
         y = xyt[1] - direction[1] * 70
+        print("Headon")
         if self.dobotArea(x, y):
+            sagaru_before = time.time()
             self.dobot.speed(800, 800)  # velocity, acceleration
             self.dobot.move_to(x, y, self.z, self.r)
             self.stop([x, y])
+            sagaru_after = time.time()
+            print(sagaru_after - sagaru_before)
             wait_time = xyt[2] - int(time.time() * 1000)  # ms
             print(wait_time)
             if wait_time > 100:
@@ -97,10 +110,14 @@ class HIT:
                 self.stop([x, y])
 
 
-    def hitXdirection(self, xyt):
+    def hitXdirection(self, xyt, direction):
+        if direction[0] < -0.5:
+            return
+        
+        print("Xdirection")
         direction = [1, 0]
 
-        x = xyt[0] - direction[0] * 70
+        x = 160
         y = xyt[1] - direction[1] * 70
         if self.dobotArea(x, y):
             self.dobot.speed(800, 800)  # velocity, acceleration
@@ -112,10 +129,13 @@ class HIT:
                 self.dobot.wait(wait_time - 10)
 
             x += direction[0] * self.l
-            y += direction[1] * self.l
             if self.dobotArea(x, y):
                 self.dobot.speed(800, 800)  # velocity, acceleration
                 self.dobot.move_to(x, y, self.z, self.r)
+                self.stop([x, y])
+                
+                self.dobot.speed(800, 800)  # velocity, acceleration
+                self.dobot.move_to(160, y, self.z, self.r)
                 self.stop([x, y])
 
     def catchPack(self, xyt, direction):

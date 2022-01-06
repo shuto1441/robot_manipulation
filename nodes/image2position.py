@@ -36,7 +36,7 @@ class Subscribe_publishers:
     def __init__(self, pub: 'Publishers'):
         self.pub = pub
         # Subscriberを作成
-        rospy.Subscriber("usb_cam/image_raw", Image, self.callback)
+        rospy.Subscriber("usb_cam/image_raw", Image, self.callback, queue_size=1)
 
     def callback(self, img_msg):
         try:

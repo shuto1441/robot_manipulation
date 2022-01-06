@@ -32,12 +32,13 @@ class Orbit:
 
     def __init__(
         self, linearity_thresh: float, positional_resolution: int,
-        max_pred_iter: int = 100,
+        static_resolution: int, max_pred_iter: int = 100,
         floorfriction_ratio: Tuple[float, float] = (1.0, 1.0),
         wallbounce_ratio: Tuple[float, float] = (1.0, 1.0)
     ) -> None:
         self.linearity_thresh = linearity_thresh
         self.positional_resolution = positional_resolution
+        self.static_resolution = static_resolution
         self.max_pred_iter = max_pred_iter
         self.floorfriction_ratio = floorfriction_ratio
         self.wallbounce_ratio = wallbounce_ratio
@@ -74,7 +75,7 @@ class Orbit:
         p_pre, p_cur = points[1], points[2]
         vec = p_cur.coord - p_pre.coord  # 過去2点のベクトル
         vec_len = norm(vec)
-        if vec_len < self.positional_resolution:    # 止まっている判定
+        if vec_len < self.static_resolution:    # 止まっている判定
             vec = np.zeros_like(vec)
             ratio = 1.0
         else:                                       # 動いている判定
@@ -173,5 +174,5 @@ class Test:
 
 if __name__ == "__main__":
     test = Test()
-    # test.simulate(Orbit(0.8, 20, 100, (1.0, 1.0), (1.0, 1.0)))
-    test.simulate(Orbit(0.8, 20, 100, (0.995, 0.995), (0.995, 0.6)))
+    # test.simulate(Orbit(0.8, 10, 100, (1.0, 1.0), (1.0, 1.0)))
+    test.simulate(Orbit(0.8, 10, 100, (0.995, 0.995), (0.995, 0.6)))
