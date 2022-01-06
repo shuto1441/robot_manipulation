@@ -57,9 +57,9 @@ class HIT:
                 if d == 0: # if pack is stop
                     direction = [1, 0] # x axis direction
                 else:
-                    dir = (xy_pre - xy) / d
+                    dir = (np.array(xy_pre) - np.array(xy)) / d
                     if dir[0] > 0 and dir[1]*xy[1] > 0:
-                        direction = dir
+                        direction = dir.tolist()
                     else:
                         direction = [1, 0] # x axis direction
 
