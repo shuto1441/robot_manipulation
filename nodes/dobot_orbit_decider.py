@@ -4,7 +4,7 @@ import rospy
 # メッセージの型等のimport
 from robot_manipulation.msg import dobot_orbit
 from robot_manipulation.msg import pack_predicted_position
-#from std_msgs.msg import Float32MultiArray
+from robot_manipulation.msg import pack_current_position
 
 from robot_manipulation import HIT
 from time import sleep
@@ -35,17 +35,34 @@ from time import sleep
 
 class Subscribers:
     def __init__(self):
-        self.hit = HIT(1)
+        self.hit = HIT(1) # 0 or 1
+        self.moving = False
         # Subscriberを作成
         rospy.Subscriber("/pack_pdt_pos", pack_predicted_position, self.callback, queue_size=1)
+        rospy.Subscriber("/pack_cur_pos", pack_current_position, self.callback2, queue_size=1)
 
     def callback(self, orbit_predict):
         print("callback")
         xyt = list(orbit_predict.xyt)
         direction = list(orbit_predict.direction)
         xyt[2] -= 800 ##### tuning #####
-        self.hit.hit(xyt, direction)
-        # self.hit.returnDobot(1)
+        if not self.moving:
+            self.moving = True
+            self.hit.hit(xyt, direction)
+            # self.hit.returnDobot(1)
+            self.moving = False
+
+    def callback2(self, position):
+        cur_x = position.x #cur_x 現在のpackのx座標
+        cur_y = position.y #cur_y 現在のpackのy座標
+        cur_t = int(position.header.stamp.secs * 1000) + int(position.header.stamp.nsecs / 1000000)
+        xyt = [cur_x, cur_y, cur_t]
+        if cur_x < 255:
+            if not self.moving:
+                self.moving = True
+                print("callback2")
+                self.hit.hitDirect(xyt)
+                self.moving = False
 
 
 def main():

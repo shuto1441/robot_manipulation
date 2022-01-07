@@ -32,8 +32,13 @@ class HIT:
     def dobotArea(self, x, y):
         d_from_base = self.calcDistance([x, y], self.p_base)
         judge = False
-        if d_from_base < 280 and x >= 155 and y > -165 and y < 165:
-            judge = True
+        if  x >= 155 and y > -165 and y < 165:
+            if self.method == 0:
+                if d_from_base < 280:
+                    judge = True
+            else:
+                if x <= 225:
+                    judge = True
         return judge
 
     def stop(self, goal):
@@ -98,8 +103,13 @@ class HIT:
             self.hitHeadon(xyt, direction)
         elif self.method == 1: # noda method
             self.hitXdirection(xyt, direction)
+        elif self.method == 2: # direct method
+            self.hitDirect(xyt)
 
     def hitHeadon(self, xyt, direction): # tanaka method
+        if direction[0] < -0.5: # if pack is leaving
+            return
+        
         print("Headon")
 
         x = xyt[0] - direction[0] * 70
@@ -148,9 +158,26 @@ class HIT:
                 self.dobot.move_to(x, y, self.z, self.r)
                 self.stop([x, y])
                 
+                x = 155
                 self.dobot.speed(800, 800)  # velocity, acceleration
-                self.dobot.move_to(155, y, self.z, self.r)
+                self.dobot.move_to(x, y, self.z, self.r)
                 self.stop([x, y])
+    
+    def hitDirect(self, xyt): # direct method
+        print("Direct")
+
+        x = xyt[0]
+        y = xyt[1]
+        if self.dobotArea(x, y):
+            self.dobot.speed(800, 800)  # velocity, acceleration
+            self.dobot.move_to(x, y, self.z, self.r)
+            self.stop([x, y])
+
+            x = 155
+            y = 0
+            self.dobot.speed(800, 800)  # velocity, acceleration
+            self.dobot.move_to(x, y, self.z, self.r)
+            self.stop([x, y])
 
     def catchPack(self, xyt, direction): # catch pack
         x = xyt[0] - direction[0] * 70
