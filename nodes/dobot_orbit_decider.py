@@ -35,22 +35,17 @@ from time import sleep
 
 class Subscribers:
     def __init__(self):
-        #self.pub = pub
-        self.hit = HIT()
+        self.hit = HIT(1)
         # Subscriberを作成
         rospy.Subscriber("/pack_pdt_pos", pack_predicted_position, self.callback, queue_size=1)
-        #self.moving = False
 
     def callback(self, orbit_predict):
-        #if not self.moving:
-        #self.moving = True
-        xyt = list(orbit_predict.xyt)
-        direction = orbit_predict.direction
         print("callback")
-        xyt[2] -= 800
-        self.hit.hitXdirection(xyt, direction)
+        xyt = list(orbit_predict.xyt)
+        direction = list(orbit_predict.direction)
+        xyt[2] -= 800 ##### tuning #####
+        self.hit.hit(xyt, direction)
         # self.hit.returnDobot(1)
-        #self.moving = False
 
 
 def main():
