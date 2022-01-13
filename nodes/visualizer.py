@@ -20,7 +20,8 @@ from robot_manipulation.msg import pack_predicted_position
 
 start=0
 
-def callback(self, img_msg, position, orbit_predict):
+def callback(img_msg, position, orbit_predict):
+    print('ok')
     try:
         bridge = CvBridge()
         img = bridge.imgmsg_to_cv2(img_msg, "bgr8")
@@ -34,9 +35,9 @@ def callback(self, img_msg, position, orbit_predict):
         cur_y=int(position.y) #現在のパックの推定y座標．mm単位
         orbit_predict_list = list(orbit_predict.xyt) #現在のパックの予測軌道．mm単位．#int64のリスト
         # img_and_positions: カメラ画像に過去および現在の推定座標と予測軌道を重ねたもの. ndarray
-        #　pre_positions: 過去の推定座標と推定軌道が作図された図．古いものほど薄くなっている．ndarray
+        # pre_positions: 過去の推定座標と推定軌道が作図された図．古いものほど薄くなっている．ndarray
         img_and_positions, pre_positions = Visualization.msgs_to_img(img,cur_x,cur_y,orbit_predict_list,pre_positions)
-
+        print('1')
         cv.imshow('image', img)
         cv.waitKey(1)
     except Exception as err:
@@ -49,14 +50,15 @@ def main():
     # Subscriberを作成
     sub1 = message_filters.Subscriber("usb_cam/image_raw", Image)
     sub2 = message_filters.Subscriber("/pack_cur_pos", pack_current_position)
-    sub2 = message_filters.Subscriber("/pack_pdt_pos", pack_predicted_position)
+    sub3 = message_filters.Subscriber("/pack_pdt_pos", pack_predicted_position)
 
 
-    queue_size = 1
+    queue_size = 10
     fps = 30.
-    delay = 1 / fps * 0.5
+    delay = 1 / fps * 1.5
 
     mf = message_filters.ApproximateTimeSynchronizer([sub1, sub2, sub3], queue_size, delay)
+    print('ok2')
     mf.registerCallback(callback)
 
     rospy.spin()

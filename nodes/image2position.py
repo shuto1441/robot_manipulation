@@ -9,14 +9,18 @@ from cv_bridge import CvBridge
 from robot_manipulation import video_capture
 import cv2 as cv
 import numpy as np
+from robot_manipulation import CameraCalibration
+from time import sleep
+
 class Publishers():
     def __init__(self):
         # Publisherを作成
-        self.pub = rospy.Publisher('/pack_cur_pos', pack_current_position, queue_size=10)
+        self.pub = rospy.Publisher('/pack_cur_pos', pack_current_position, queue_size=1)
         # messageの型を作成
         self.msg = pack_current_position()
         # self.start = False;
         # self.step = 1
+
 
     def make_msg(self, img):
         # 処理を書く
@@ -31,22 +35,29 @@ class Publishers():
         self.msg.y = int(mm_y) #pack y座標
         self.msg.header.stamp = rospy.Time.now()
         self.pub.publish(self.msg)
+        # rospy.sleep(0.5)
 
 class Subscribe_publishers:
     def __init__(self, pub: 'Publishers'):
         self.pub = pub
         # Subscriberを作成
         rospy.Subscriber("usb_cam/image_raw", Image, self.callback, queue_size=1)
+        self.cal = CameraCalibration('/home/ishii/dobot_ws/src/robot_manipulation/src/robot_manipulation/calibration_params.npz')
+        self.publisher = rospy.Publisher('usb_cam/image_raw/calib', Image, queue_size=1)
+
 
     def callback(self, img_msg):
         try:
             bridge = CvBridge()
             img = bridge.imgmsg_to_cv2(img_msg, "bgr8")
             #cv.imshow('image', img)
-            cv.waitKey(1)
+            img = self.cal.undistort(img)
+            image_message = bridge.cv2_to_imgmsg(img, encoding="bgr8")
+            # cv.waitKey(1)
         except Exception as err:
             print(err)
         # publish
+        self.publisher.publish(image_message)
         self.pub.make_msg(img)
 
 def main():

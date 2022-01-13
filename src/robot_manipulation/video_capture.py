@@ -21,10 +21,16 @@ m = np.empty((4,2))
 # m[3] = [50,620]
 
 # 320*640用
-m[0] = [30,20]
-m[1] = [550,15]
-m[2] = [570,285]
-m[3] = [20,290]
+# m[0] = [30,20]
+# m[1] = [550,15]
+# m[2] = [570,285]
+# m[3] = [20,290]
+
+m[0] = [48, 31]
+m[1] = [528,31]
+m[2] = [525, 278]
+m[3] = [46, 272]
+
 
 # フィールドの実際の大きさ
 x_min,x_max=110,910
@@ -32,20 +38,26 @@ y_min,y_max=-200,200
 width, height = (x_max-x_min,y_max-y_min) # 変形後画像サイズ
 
 marker_coordinates = np.float32(m)
-true_coordinates   = np.float32([[0,0],[width,0],[width,height],[0,height]])
+#true_coordinates   = np.float32([[0,0],[width,0],[width,height],[0,height]])
+true_coordinates   = np.float32([[910,-200],[110,-200],[110,200],[910,200]])
 trans_mat = cv.getPerspectiveTransform(marker_coordinates,true_coordinates)
-# img_trans = cv.warpPerspective(frame,trans_mat,(width, height))
+#img_trans = cv.warpPerspective(frame,trans_mat,(width, height))
 # plt.imshow(img_trans)
 # print(trans_mat)
 
 
 def img2mm(img):
+    img = cv.blur(img, (5, 5))
+    # img_trans = cv.warpPerspective(img,trans_mat,(width, height))
+    # plt.imshow(img_trans)
     frame_b=img[:,:,0]
     frame_g=img[:,:,1]
     frame_r=img[:,:,2]
 
 
-    frame_extract_cian=(frame_r<150)*(frame_b>170)*(frame_g>160)
+    # frame_extract_cian=(frame_r<150)*(frame_b>170)*(frame_g>160)
+    # frame_extract_cian = (150 <= frame_b) * (frame_b <= 220) * (80 <= frame_g) * (frame_g <= 150) * (0 <= frame_r) * (frame_r <= 100)
+    frame_extract_cian = (130 <= frame_b) * (frame_b <= 220) * (50 <= frame_g) * (frame_g <= 150) * (0 <= frame_r) * (frame_r <= 80)
     # plt.imshow(frame_extract_cian)
 
     diff_sum_x=np.sum(frame_extract_cian, axis=0)
@@ -63,6 +75,9 @@ def img2mm(img):
     pix_y=ave_y
     tmp0,tmp1,tmp2=np.dot(trans_mat,[pix_x,pix_y,1])
 
-    mm_x=width-tmp0+59
-    mm_y=-height/2+tmp1
+    # mm_x=width-tmp0+x_min
+    # mm_y=-height/2+tmp1
+    mm_x=tmp0
+    mm_y=tmp1
     return mm_x,mm_y
+

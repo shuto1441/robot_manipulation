@@ -8,8 +8,8 @@ class HIT:
         self.moving = False
         self.dobot = Dobot()
         self.p_base = [0, 0]
-        self.dobot.move_to(155, 0, -20, 0)
-        self.stop([155, 0])
+        self.dobot.move_to(145, 0, -20, 0)
+        self.stop([145, 0])
         self.p_init = self.dobot.pose()
         self.z = self.p_init.z
         self.r = self.p_init.r
@@ -18,9 +18,9 @@ class HIT:
 
         # move-distance when hit
         if method == 0: # tanaka method
-            self.l = 50
+            self.l = 60
         elif method == 1: # noda method
-            self.l = 70 # almost upper limit
+            self.l = 80 # almost upper limit
         
 
     def calcDistance(self, position1, position2):
@@ -32,12 +32,12 @@ class HIT:
     def dobotArea(self, x, y):
         d_from_base = self.calcDistance([x, y], self.p_base)
         judge = False
-        if  x >= 155 and y > -165 and y < 165:
+        if  x >= 145 and y > -150 and y < 150:
             if self.method == 0:
                 if d_from_base < 280:
                     judge = True
             else:
-                if x <= 225:
+                if x <= 265:
                     judge = True
         return judge
 
@@ -115,12 +115,12 @@ class HIT:
         x = xyt[0] - direction[0] * 70
         y = xyt[1] - direction[1] * 70
         if self.dobotArea(x, y):
-            sagaru_before = time.time()
+            # sagaru_before = time.time()
             self.dobot.speed(800, 800)  # velocity, acceleration
             self.dobot.move_to(x, y, self.z, self.r)
             self.stop([x, y])
-            sagaru_after = time.time()
-            print(sagaru_after - sagaru_before)
+            # sagaru_after = time.time()
+            # print(sagaru_after - sagaru_before)
             wait_time = xyt[2] - int(time.time() * 1000)  # ms
             print(wait_time)
             if wait_time > 100:
@@ -135,49 +135,52 @@ class HIT:
 
 
     def hitXdirection(self, xyt, direction): # noda method
-        if direction[0] < -0.5: # if pack is leaving
-            return
+        # if direction[0] < -0.5: # if pack is leaving
+        #     return
         
         print("Xdirection")
         direction = [1, 0]
 
-        x = 155
+        x = 145
         y = xyt[1] - direction[1] * 70
-        if self.dobotArea(x, y):
+        if self.dobotArea(x, y) and direction[0] > 0:
             self.dobot.speed(800, 800)  # velocity, acceleration
             self.dobot.move_to(x, y, self.z, self.r)
             self.stop([x, y])
-            wait_time = xyt[2] - int(time.time() * 1000)  # ms
-            print('wait time is ' + str(wait_time))
-            if wait_time > 100:
-                self.dobot.wait(wait_time - 100)
+            # wait_time = xyt[2] - int(time.time() * 1000)  # ms
+            # print('wait time is ' + str(wait_time))
+            # if wait_time > 100:
+            #     self.dobot.wait(wait_time - 100)
 
             x += direction[0] * self.l
-            if self.dobotArea(x, y):
+            if self.dobotArea(x, y) and direction[0] < 0:
                 self.dobot.speed(800, 800)  # velocity, acceleration
                 self.dobot.move_to(x, y, self.z, self.r)
                 self.stop([x, y])
-                
-                x = 155
-                self.dobot.speed(800, 800)  # velocity, acceleration
-                self.dobot.move_to(x, y, self.z, self.r)
-                self.stop([x, y])
+                    
+            #     x = 145
+            #     self.dobot.speed(800, 800)  # velocity, acceleration
+            #     self.dobot.move_to(x, y, self.z, self.r)
+            #     self.stop([x, y])
     
     def hitDirect(self, xyt): # direct method
-        print("Direct")
-
         x = xyt[0]
         y = xyt[1]
         if self.dobotArea(x, y):
+            print("Direct")
+
             self.dobot.speed(800, 800)  # velocity, acceleration
             self.dobot.move_to(x, y, self.z, self.r)
             self.stop([x, y])
 
-            x = 155
+            x = 145
             y = 0
             self.dobot.speed(800, 800)  # velocity, acceleration
             self.dobot.move_to(x, y, self.z, self.r)
             self.stop([x, y])
+        else:
+            print("Direct but out of dobotArea")
+            print([x, y])
 
     def catchPack(self, xyt, direction): # catch pack
         x = xyt[0] - direction[0] * 70

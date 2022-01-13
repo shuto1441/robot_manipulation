@@ -7,8 +7,8 @@ import numpy as np
 from numpy.linalg import norm
 
 
-X_LIM = (0, 1000)  # [mm]
-Y_LIM = (-200, 200)  # [mm]
+X_LIM = (145, 875)  # [mm]
+Y_LIM = (-165, 165)  # [mm]
 
 
 class Orbit:
