@@ -42,12 +42,12 @@ class Subscribers:
         rospy.Subscriber("/pack_cur_pos", pack_current_position, self.callback2, queue_size=1)
 
     def callback(self, orbit_predict):
-        print("callback")
         xyt = list(orbit_predict.xyt)
         direction = list(orbit_predict.direction)
-        xyt[2] -= 800 ##### tuning #####
+        xyt[2] -= 0 ##### tuning #####
         if not self.moving:
             self.moving = True
+            #print("callback")
             self.hit.hit(xyt, direction)
             # self.hit.returnDobot(1)
             self.moving = False
@@ -57,12 +57,12 @@ class Subscribers:
         cur_y = position.y #cur_y 現在のpackのy座標
         cur_t = int(position.header.stamp.secs * 1000) + int(position.header.stamp.nsecs / 1000000)
         xyt = [cur_x, cur_y, cur_t]
-        if cur_x < 255:
-            if not self.moving:
-                self.moving = True
-                print("callback2")
-                self.hit.hitDirect(xyt)
-                self.moving = False
+        if cur_x < 265:
+            #if not self.moving:
+                #self.moving = True
+                #print("callback2")
+            self.hit.hitDirect(xyt)
+                #self.moving = False
 
 
 def main():

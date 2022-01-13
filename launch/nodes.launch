@@ -7,7 +7,7 @@
         <!-- 画像の大きさ（横幅）の指定 -->
         <param name="image_width" value="640"/>
         <!-- 画像の大きさ（縦幅）の指定 -->
-        <param name="image_height" value="320"/>
+        <param name="image_height" value="350"/>
         <param name="pixel_format" value="yuyv" />
         <param name="camera_frame_id" value="usb_cam" />
         <param name="io_method" value="mmap" />

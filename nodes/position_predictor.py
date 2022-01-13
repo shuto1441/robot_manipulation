@@ -14,9 +14,9 @@ from time import sleep
 class Publishers():
     def __init__(self):
         # Publisherを作成
-        self.pub = rospy.Publisher('/pack_pdt_pos', pack_predicted_position, queue_size=10)
+        self.pub = rospy.Publisher('/pack_pdt_pos', pack_predicted_position, queue_size=1)
         self.orbit = Orbit(
-            linearity_thresh=0.9, positional_resolution=5, static_resolution=30, max_pred_iter=200,
+            linearity_thresh=0.9, positional_resolution=20, static_resolution=3, max_pred_iter=200,
             floorfriction_ratio=(0.99, 0.99), wallbounce_ratio=(1.0, 1.0))
         self.hit = HIT(1)
 
@@ -25,7 +25,7 @@ class Publishers():
         cur_y = position.y #cur_y 現在のpackのy座標
         cur_t = int(position.header.stamp.secs * 1000) + int(position.header.stamp.nsecs / 1000000)
         # cur_t = int((position.header.stamp.secs % 1000) * 1000) + int(position.header.stamp.nsecs / 1000000)
-        print(cur_t)
+        # print(cur_t)
 
         # 処理を書く
         msg = pack_predicted_position()
@@ -38,16 +38,17 @@ class Publishers():
         if data_len == 0:
             print('no data')
             return
-        print(f'data len = {data_len}')
+        # print(f'data len = {data_len}')
         condition = self.hit.hitCondition(preds)
         if condition is not None:
-            print("condition is not None")
+            # print(f"{preds[:3]} ... {preds[-3:]}")
             xyt, direction =  condition
+            print('xyt is ' + str(xyt))
             msg.xyt = xyt
             msg.direction = direction
             self.pub.publish(msg)
         else:
-            print(preds[:3], preds[-3:])
+            print("condition is None")
 
 
 class Subscribe_publishers:
