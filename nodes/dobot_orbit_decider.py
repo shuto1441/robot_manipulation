@@ -35,7 +35,7 @@ from time import sleep
 
 class Subscribers:
     def __init__(self):
-        self.hit = HIT(1) # 0 or 1
+        self.hit = HIT(1) # 0:tanaka method or 1: noda method
         self.moving = False
         # Subscriberを作成
         rospy.Subscriber("/pack_pdt_pos", pack_predicted_position, self.callback, queue_size=1)
@@ -44,10 +44,9 @@ class Subscribers:
     def callback(self, orbit_predict):
         xyt = list(orbit_predict.xyt)
         direction = list(orbit_predict.direction)
-        xyt[2] -= 0 ##### tuning #####
+        xyt[2] -= 500 ##### tuning #####
         if not self.moving:
             self.moving = True
-            #print("callback")
             self.hit.hit(xyt, direction)
             # self.hit.returnDobot(1)
             self.moving = False
@@ -58,11 +57,7 @@ class Subscribers:
         cur_t = int(position.header.stamp.secs * 1000) + int(position.header.stamp.nsecs / 1000000)
         xyt = [cur_x, cur_y, cur_t]
         if cur_x < 265:
-            #if not self.moving:
-                #self.moving = True
-                #print("callback2")
             self.hit.hitDirect(xyt)
-                #self.moving = False
 
 
 def main():
