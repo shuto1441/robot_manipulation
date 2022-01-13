@@ -17,11 +17,13 @@ class Orbit:
     Parameters
     ----------
         linearity_thresh: 3点が直線に並んでいる程度(0.0~1.0)．1に近いほど直線状．
-            3点から作られる三角形について，「長辺/(短辺1+短辺2)」で定義される．壁で
-            の折り返し地点で誤計算するのを防ぐため．
-        positional_resolution: 予測軌道の点列の最大の分解能．
+            3点から作られる三角形について，「長辺/(短辺1+短辺2)」で定義される．
+            壁での折り返し地点で誤計算するのを防ぐため．
+        positional_resolution: 予測地点間の最大距離．
             最新の2点から割り出した速度で分解能分進む時間を計算し，その時間ステップ
             で移動距離を計算する．
+        static_resolution: 静止判定移動距離．
+            この値より小さい移動は無視し，静止していると判断する．
         max_pred_iter: 計算するステップ数の上限．
         floorfriction_ratio: (x, y)方向についての摩擦による速度変化の割合．
             各方向について，1時間ステップ毎に速度に乗算される．例えば(0.9, 0.8)の場
@@ -71,14 +73,14 @@ class Orbit:
         if _linearity(points) < self.linearity_thresh:
             return None
 
-        # 軌道予測
+        # 上記以外の場合，軌道予測
         p_pre, p_cur = points[1], points[2]
         vec = p_cur.coord - p_pre.coord  # 過去2点のベクトル
         vec_len = norm(vec)
         if vec_len < self.static_resolution:    # 止まっている判定
             vec = np.zeros_like(vec)
             ratio = 1.0
-        else:                                       # 動いている判定
+        else:                                   # 動いている判定
             ratio = self.positional_resolution / vec_len    # 分解能あたりに変換
         norm_vec = vec * ratio
         time_step = int((p_cur.t - p_pre.t) * ratio)        # 分解能分進む時間を時間ステップにする
@@ -90,7 +92,7 @@ class Orbit:
     def _predict_points(
         self, time: int, time_step: int, pos: np.ndarray, vec: np.ndarray,
         i: int, preds: List[List[int]]
-        ) -> List[List[int]]:
+    ) -> List[List[int]]:
         """再帰的に軌道を予測する．床や壁との摩擦による減速を反映．"""
 
         i += 1
@@ -101,8 +103,8 @@ class Orbit:
             return preds
 
         if y_next_tmp < Y_LIM[0] or Y_LIM[1] < y_next_tmp:  # 壁との衝突判定
-            vec_next[0] *= self.wallbounce_ratio[0]  # 壁面摩擦による減速
-            vec_next[1] *= -self.wallbounce_ratio[1]  # 跳ね返りによる減速
+            vec_next[0] *= self.wallbounce_ratio[0]     # 壁面摩擦による減速
+            vec_next[1] *= -self.wallbounce_ratio[1]    # 跳ね返りによる減速
 
         x_next, y_next = pos_next = pos + vec_next
         preds.append([int(x_next), int(y_next), time+time_step*i])
@@ -122,7 +124,7 @@ def _linearity(points: List['Point']):
 
 @dataclass
 class Point:
-    """x, y]座標，時刻を保持する．"""
+    """x, y座標，時刻を保持する．"""
     x: int
     y: int
     t: int
@@ -134,12 +136,8 @@ class Point:
 class Test:
     """軌道予測をシミュレートするテストクラス．"""
 
-    def __init__(self) -> None:
-        self.init_points = [
-            [200, 105, 10.00],
-            [206, 113, 10.04],
-            [214, 125, 10.09]
-        ]
+    def __init__(self, init_points: List[List[int]]) -> None:
+        self.init_points = init_points
 
     def simulate(self, orbit: 'Orbit') -> None:
         for point in self.init_points:
@@ -165,14 +163,19 @@ class Test:
         self, point: List[int], color: Tuple[int, int, int]
     ) -> None:
         x, y, t = point
-        print(x, y, t)
+        print(f"x: {x}, y: {y}, t: {t}")
         cv2.circle(self.field, (x, y-Y_LIM[0]), 3, color, thickness=-1)
-        # cv2.putText(
-        #     self.field, text=str(round(t, 2)), org=(x, y), fontFace=cv2.FONT_HERSHEY_SIMPLEX,
-        #     fontScale=0.4, color=color, thickness=1, lineType=cv2.LINE_AA)
 
 
 if __name__ == "__main__":
-    test = Test()
-    # test.simulate(Orbit(0.8, 10, 100, (1.0, 1.0), (1.0, 1.0)))
-    test.simulate(Orbit(0.8, 10, 100, (0.995, 0.995), (0.995, 0.6)))
+    init_points = [
+        [200, 105, 10],
+        [206, 113, 12],
+        [214, 125, 14]
+    ]
+    test = Test(init_points)
+
+    # エネルギ損失なしの場合
+    test.simulate(Orbit(0.8, 20, 2, 100, (1.0, 1.0), (1.0, 1.0)))
+    # ありの場合
+    test.simulate(Orbit(0.8, 20, 2, 100, (0.995, 0.995), (0.995, 0.6)))

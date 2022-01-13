@@ -1,8 +1,14 @@
 import numpy as np
 import cv2
 
-class CameraCalibration():
 
+class CameraCalibration():
+    """カメラ画像の歪みを補正する．
+
+    Parameters
+    ----------
+        fpath: 補正パラメータのnpzファイルパス
+    """
     def __init__(self, fpath: str) -> None:
         npz = np.load(fpath)
         self.mtx = npz['mtx']
