@@ -18,7 +18,7 @@ class Publishers():
         self.orbit = Orbit(
             linearity_thresh=0.9, positional_resolution=5, static_resolution=30, max_pred_iter=200,
             floorfriction_ratio=(0.99, 0.99), wallbounce_ratio=(1.0, 1.0))
-        self.hit = HIT()
+        self.hit = HIT(1)
 
     def make_and_send_msg(self, position):
         cur_x = position.x #cur_x 現在のpackのx座標
