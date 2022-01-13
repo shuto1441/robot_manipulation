@@ -103,8 +103,6 @@ class HIT:
             self.hitHeadon(xyt, direction)
         elif self.method == 1: # noda method
             self.hitXdirection(xyt, direction)
-        elif self.method == 2: # direct method
-            self.hitDirect(xyt)
 
     def hitHeadon(self, xyt, direction): # tanaka method
         if direction[0] < -0.5: # if pack is leaving
