@@ -2,8 +2,12 @@
 Created in the robot manipulation class practice of the Department of Mechanical Engineering, Graduate School of Engineering, The University of Tokyo.
 
 # DEMO
-動画
-画像を差し込みたい
+## video
+https://user-images.githubusercontent.com/51389556/149461276-32e2ae6b-74e7-409c-9947-1092cbbf7558.mp4
+
+## ROS topic graph
+<img width="917" alt="キャプチャ" src="https://user-images.githubusercontent.com/51389556/149461283-5f5c8c91-7611-4b17-ac87-ed33f03b04c5.PNG">
+
 
 # Requirement
 * Ubuntu 20.04
