@@ -18,14 +18,11 @@ class Publishers():
         self.pub = rospy.Publisher('/pack_cur_pos', pack_current_position, queue_size=1)
         # messageの型を作成
         self.msg = pack_current_position()
-        # self.start = False;
-        # self.step = 1
-
 
     def make_msg(self, img):
-        # 処理を書く
         # 引数のimgは画像のnumpy配列
 
+        # 画像からパック座標を推定
         mm_x,mm_y=video_capture.img2mm(img)
         if np.isnan(mm_x) or np.isnan(mm_y):
             print('no data')
@@ -35,7 +32,6 @@ class Publishers():
         self.msg.y = int(mm_y) #pack y座標
         self.msg.header.stamp = rospy.Time.now()
         self.pub.publish(self.msg)
-        # rospy.sleep(0.5)
 
 class Subscribe_publishers:
     def __init__(self, pub: 'Publishers'):
@@ -50,10 +46,8 @@ class Subscribe_publishers:
         try:
             bridge = CvBridge()
             img = bridge.imgmsg_to_cv2(img_msg, "bgr8")
-            #cv.imshow('image', img)
             img = self.cal.undistort(img)
             image_message = bridge.cv2_to_imgmsg(img, encoding="bgr8")
-            # cv.waitKey(1)
         except Exception as err:
             print(err)
         # publish

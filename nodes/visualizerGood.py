@@ -2,9 +2,6 @@
 # -*- coding: utf-8 -*-
 import numpy as np
 
-# 複数のtopicを読みたい　https://qiita.com/nabion/items/319d4ffdc3d87bfb0076
-import message_filters
-
 import rospy
 import cv2 as cv
 
@@ -12,13 +9,11 @@ import cv2 as cv
 from robot_manipulation import Visualization
 from robot_manipulation import Orbit
 
-
 # メッセージの型等のimport
 from robot_manipulation.msg import pack_current_position
 from sensor_msgs.msg import Image
 from cv_bridge import CvBridge
 from robot_manipulation.msg import pack_predicted_position
-# from std_msgs.msg import Int32MultiArray
 
 
 
@@ -27,7 +22,6 @@ class Subscribers:
         # Subscriberを作成
         rospy.Subscriber("/pack_cur_pos", pack_current_position, self.callback2, queue_size=1)
         rospy.Subscriber("usb_cam/image_raw/calib", Image, self.callback1, queue_size=1)
-        # rospy.Subscriber("/pack_pdt_pos", pack_predicted_position, self.callback3, queue_size=1)
         # Publisherを作成
         self.pub = rospy.Publisher('/visualized_image', Image, queue_size=10)
         # messageの型を作成
@@ -42,9 +36,7 @@ class Subscribers:
 
 
     def callback1(self, img_msg):
-        # print('ok1')
         self.img = self.bridge.imgmsg_to_cv2(img_msg, "bgr8")
-        #cv.imshow('image', img)
         cv.waitKey(1)
         if self.start==0: #pre_positionsを初期化(imgの大きさの空のndarrayが欲しいだけ)
             self.pre_positions=np.copy(self.img)
@@ -55,7 +47,6 @@ class Subscribers:
         self.pub.publish(self.image)
 
     def callback2(self, position):
-        # print('ok2')
         self.cur_x=int(position.x) #現在のパックの推定x座標．mm単位
         self.cur_y=int(position.y) #現在のパックの推定y座標．mm単位
         cur_t = int(position.header.stamp.secs * 1000) + int(position.header.stamp.nsecs / 1000000)
@@ -65,20 +56,7 @@ class Subscribers:
             self.orbit_predict_list=[]
         else:
             self.orbit_predict_list=preds
-        # img_and_positions, self.pre_positions = Visualization.msgs_to_img(self.img, self.cur_x, self.cur_y, self.orbit_predict_list, self.pre_positions)
-        # self.image = self.bridge.cv2_to_imgmsg(img_and_positions, encoding="bgr8")
-        # self.pub.publish(self.image)
 
-    # def callback3(self, orbit_predict):
-    #     print('callback3')
-    #     self.orbit_predict_list = list(orbit_predict.xyt) #現在のパックの予測軌道．mm単位．#int64のリスト
-    #     print(self.orbit_predict_list)
-    #     #img_and_positions, self.pre_positions = Visualization.msgs_to_img(self.img, self.cur_x, self.cur_y, self.orbit_predict_list, self.pre_positions)
-    #     #self.image = self.bridge.cv2_to_imgmsg(img_and_positions, encoding="bgr8")
-    #     #self.pub.publish(self.image)
-
-
-    #     print('ok3')
 
 def main():
     # nodeの立ち上げ
