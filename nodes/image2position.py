@@ -38,7 +38,8 @@ class Subscribe_publishers:
         self.pub = pub
         # Subscriberを作成
         rospy.Subscriber("usb_cam/image_raw", Image, self.callback, queue_size=1)
-        self.cal = CameraCalibration('/home/ishii/dobot_ws/src/robot_manipulation/src/robot_manipulation/calibration_params.npz')
+        ws='/home/ishii/dobot_ws'  # Please modify here by your work spase directory
+        self.cal = CameraCalibration(ws+'/src/robot_manipulation/src/robot_manipulation/calibration_params.npz')
         self.publisher = rospy.Publisher('usb_cam/image_raw/calib', Image, queue_size=1)
 
 
