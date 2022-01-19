@@ -2,64 +2,68 @@
 # -*- coding: utf-8 -*-
 import numpy as np
 
-# 複数のtopicを読みたい　https://qiita.com/nabion/items/319d4ffdc3d87bfb0076
-import message_filters
-
 import rospy
 import cv2 as cv
 
 #自作ライブラリ
 from robot_manipulation import Visualization
+from robot_manipulation import Orbit
 
 # メッセージの型等のimport
 from robot_manipulation.msg import pack_current_position
 from sensor_msgs.msg import Image
 from cv_bridge import CvBridge
 from robot_manipulation.msg import pack_predicted_position
-# from std_msgs.msg import Int32MultiArray
 
-start=0
 
-def callback(img_msg, position, orbit_predict):
-    print('ok')
-    try:
-        bridge = CvBridge()
-        img = bridge.imgmsg_to_cv2(img_msg, "bgr8")
 
-        if start==0: #pre_positionsを初期化(imgの大きさの空のndarrayが欲しいだけ)
-            pre_positions=np.copy(img)
-            pre_positions[:,:,:]=0
-            start=1
+class Subscribers:
+    def __init__(self):
+        # Subscriberを作成
+        rospy.Subscriber("/pack_cur_pos", pack_current_position, self.callback2, queue_size=1)
+        rospy.Subscriber("usb_cam/image_raw/calib", Image, self.callback1, queue_size=1)
+        # Publisherを作成
+        self.pub = rospy.Publisher('/visualized_image', Image, queue_size=10)
+        # messageの型を作成
+        self.image = Image()
+        self.bridge = CvBridge()
+        self.start = 0
+        self.orbit = Orbit(
+            linearity_thresh=0.9, positional_resolution=20, static_resolution=3, max_pred_iter=200,
+            floorfriction_ratio=(0.99, 0.99), wallbounce_ratio=(1.0, 1.0))
+        self.cur_x,self.cur_y=0,0
+        self.orbit_predict_list=[]
 
-        cur_x=int(position.x) #現在のパックの推定x座標．mm単位
-        cur_y=int(position.y) #現在のパックの推定y座標．mm単位
-        orbit_predict_list = list(orbit_predict.xyt) #現在のパックの予測軌道．mm単位．#int64のリスト
-        # img_and_positions: カメラ画像に過去および現在の推定座標と予測軌道を重ねたもの. ndarray
-        # pre_positions: 過去の推定座標と推定軌道が作図された図．古いものほど薄くなっている．ndarray
-        img_and_positions, pre_positions = Visualization.msgs_to_img(img,cur_x,cur_y,orbit_predict_list,pre_positions)
-        print('1')
-        cv.imshow('image', img)
+
+    def callback1(self, img_msg):
+        self.img = self.bridge.imgmsg_to_cv2(img_msg, "bgr8")
         cv.waitKey(1)
-    except Exception as err:
-        print(err)
+        if self.start==0: #pre_positionsを初期化(imgの大きさの空のndarrayが欲しいだけ)
+            self.pre_positions=np.copy(self.img)
+            self.pre_positions[:,:,:]=0
+            self.start=1
+        img_and_positions, self.pre_positions = Visualization.msgs_to_img(self.img, self.cur_x, self.cur_y, self.orbit_predict_list, self.pre_positions)
+        self.image = self.bridge.cv2_to_imgmsg(img_and_positions, encoding="bgr8")
+        self.pub.publish(self.image)
+
+    def callback2(self, position):
+        self.cur_x=int(position.x) #現在のパックの推定x座標．mm単位
+        self.cur_y=int(position.y) #現在のパックの推定y座標．mm単位
+        cur_t = int(position.header.stamp.secs * 1000) + int(position.header.stamp.nsecs / 1000000)
+        self.orbit.add([self.cur_x, self.cur_y, cur_t])
+        preds = self.orbit.predict()
+        if preds is None:
+            self.orbit_predict_list=[]
+        else:
+            self.orbit_predict_list=preds
+
 
 def main():
     # nodeの立ち上げ
     rospy.init_node('visualizer')
 
-    # Subscriberを作成
-    sub1 = message_filters.Subscriber("usb_cam/image_raw", Image)
-    sub2 = message_filters.Subscriber("/pack_cur_pos", pack_current_position)
-    sub3 = message_filters.Subscriber("/pack_pdt_pos", pack_predicted_position)
-
-
-    queue_size = 10
-    fps = 30.
-    delay = 1 / fps * 1.5
-
-    mf = message_filters.ApproximateTimeSynchronizer([sub1, sub2, sub3], queue_size, delay)
-    print('ok2')
-    mf.registerCallback(callback)
+    # クラスの作成
+    sub = Subscribers()
 
     rospy.spin()
 
