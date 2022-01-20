@@ -3,7 +3,7 @@ Created in the robot manipulation class practice of the Department of Mechanical
 
 # DEMO
 ## video
-https://user-images.githubusercontent.com/51389556/149461276-32e2ae6b-74e7-409c-9947-1092cbbf7558.mp4
+https://user-images.githubusercontent.com/51389556/150335664-d0772b72-b247-4630-9401-6826c35cf384.mp4
 
 ## ROS topic graph
 <img width="917" alt="キャプチャ" src="https://user-images.githubusercontent.com/51389556/149461283-5f5c8c91-7611-4b17-ac87-ed33f03b04c5.PNG">
