@@ -48,7 +48,7 @@ robot_manipulation：パッケージ
 ```
 
 # Author
-* [Ishii Shuto](https://github.com/shuto1441):全体システムのROSパッケージ化
+* [Ishii Shuto](https://github.com/shuto1441):全体システムのROSパッケージ化・dobotのROSパッケージ（https://github.com/shuto1441/dobot_ros）
 * [Noda Masaki](https://github.com/masakinoda111):パックの画像認識(image2position.py)
 * [Aono Kota](https://github.com/KotaAono):画像認識結果からパックの軌道予測(position_predictor.py)
 * [Tanaka Akihisa](https://github.com/akihisa1128):軌道予測からDobotにパックを打たせる(dobot_orbit_decider.py)
