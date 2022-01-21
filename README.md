@@ -34,13 +34,17 @@ rosrun robot_manipulation dobot_orbit_decider.py
 # Note
 ## Directory Layout
 ```
-robot_manipulation：パッケージ
-　├ launch：launchファイルの格納場所
-　├ nodes：ノード用のpythonファイルの格納場所
-　├ scripts：編集中のpythonファイルの格納場所
-　├ msg：topicの型の格納場所
-　├ src
-　　└ robot_manipulation：pythonの自作ライブラリの格納場所
+robot_manipulation：パッケージ 
+ ├  launch：launch ファイルの格納場所 
+ ├  nodes：ノード用の python ファイルの格納場所 
+ ｜├  image2position.py：カメラ画像からパック位置の推定（担当：野田） 
+ ｜├  position_predictor.py：過去のパック位置を基にした未来の軌道の予測（担当：青野） 
+ ｜└  dobot_orbit_decider.py：パックを打ち出す動作（担当：田中） 
+ ├  scripts：編集中の python ファイルの格納場所 
+ ├  msg：topic の型の格納場所 
+ └  src 
+  └  robot_manipulation：python の自作ライブラリの格納場所 
+   └  pydobot_ros.py：Dobot 動作用のライブラリ（担当：石井）
 ```
 
 # Author
